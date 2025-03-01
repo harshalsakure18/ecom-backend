@@ -2,8 +2,8 @@ const express = require('express');
 const Product = require('../models/productModel'); // Import the product model
 const router = express.Router();
 
-// ✅ Add a new product (Clothing)
-router.post('/products', async (req, res) => {
+// ✅ Add a new product
+router.post('/', async (req, res) => {
     try {
         const newProduct = new Product(req.body);
         const savedProduct = await newProduct.save();
@@ -14,7 +14,7 @@ router.post('/products', async (req, res) => {
 });
 
 // ✅ Get all products
-router.get('/products', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const products = await Product.find();
         res.json(products);
@@ -24,7 +24,7 @@ router.get('/products', async (req, res) => {
 });
 
 // ✅ Get a single product by ID
-router.get('/products/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: "Product not found" });
@@ -35,7 +35,7 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // ✅ Update a product by ID
-router.put('/products/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedProduct);
@@ -45,7 +45,7 @@ router.put('/products/:id', async (req, res) => {
 });
 
 // ✅ Delete a product by ID
-router.delete('/products/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         await Product.findByIdAndDelete(req.params.id);
         res.json({ message: "Product deleted successfully" });
@@ -55,7 +55,7 @@ router.delete('/products/:id', async (req, res) => {
 });
 
 // ✅ Add/Remove product from Wishlist
-router.patch('/products/:id/wishlist', async (req, res) => {
+router.patch('/:id/wishlist', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: "Product not found" });
@@ -69,7 +69,7 @@ router.patch('/products/:id/wishlist', async (req, res) => {
 });
 
 // ✅ Add/Remove product from Cart
-router.patch('/products/:id/cart', async (req, res) => {
+router.patch('/:id/cart', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: "Product not found" });
