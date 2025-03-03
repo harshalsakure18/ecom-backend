@@ -1,85 +1,54 @@
-const express = require('express');
-const Product = require('../models/productModel'); // Import the product model
+const express = require("express");
+const Product = require("../models/Product");
+
 const router = express.Router();
 
-// ✅ Add a new product
-router.post('/', async (req, res) => {
-    try {
-        const newProduct = new Product(req.body);
-        const savedProduct = await newProduct.save();
-        res.status(201).json(savedProduct);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
 // ✅ Get all products
-router.get('/', async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // ✅ Get a single product by ID
-router.get('/:id', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ message: "Product not found" });
-        res.json(product);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.get("/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// ✅ Update a product by ID
-router.put('/:id', async (req, res) => {
-    try {
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedProduct);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// ✅ Create a new product
+router.post("/", async (req, res) => {
+  try {
+    const { name, description, price, discountPrice, images, stock, category, rating, reviews, sizes } = req.body;
 
-// ✅ Delete a product by ID
-router.delete('/:id', async (req, res) => {
-    try {
-        await Product.findByIdAndDelete(req.params.id);
-        res.json({ message: "Product deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      discountPrice,
+      images,
+      stock,
+      category,
+      rating,
+      reviews,
+      sizes,
+    });
 
-// ✅ Add/Remove product from Wishlist
-router.patch('/:id/wishlist', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ message: "Product not found" });
-
-        product.wishlist = !product.wishlist; // Toggle wishlist status
-        await product.save();
-        res.json({ message: "Wishlist updated", wishlist: product.wishlist });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// ✅ Add/Remove product from Cart
-router.patch('/:id/cart', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) return res.status(404).json({ message: "Product not found" });
-
-        product.addToCart = !product.addToCart; // Toggle addToCart status
-        await product.save();
-        res.json({ message: "Cart updated", addToCart: product.addToCart });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    await newProduct.save();
+    res.status(201).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ error: "Error creating product" });
+  }
 });
 
 module.exports = router;
