@@ -77,15 +77,15 @@ const router = express.Router();
 // ✅ POST: Add a new address for a user
 router.post("/", async (req, res) => {
     try {
-        const { userId, fullName, street, city, state, zipCode, country, phone } = req.body;
+        const { email, fullName, street, city, state, zipCode, country, phone } = req.body;
 
         // Validate required fields
-        if (!userId || !fullName || !street || !city || !state || !zipCode || !country || !phone) {
+        if (!email || !fullName || !street || !city || !state || !zipCode || !country || !phone) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
         // Create new address
-        const newAddress = new Address({ userId, fullName, street, city, state, zipCode, country, phone });
+        const newAddress = new Address({ email, fullName, street, city, state, zipCode, country, phone });
         await newAddress.save();
 
         res.status(201).json({ message: "Address added successfully", address: newAddress });
@@ -94,11 +94,11 @@ router.post("/", async (req, res) => {
     }
 });
 
-// ✅ GET: Fetch all addresses for a user
-router.get("/:userId", async (req, res) => {
+// ✅ GET: Fetch all addresses for a user by email
+router.get("/:email", async (req, res) => {
     try {
-        const { userId } = req.params;
-        const addresses = await Address.find({ userId });
+        const { email } = req.params;
+        const addresses = await Address.find({ email });
         res.status(200).json(addresses);
     } catch (error) {
         res.status(500).json({ message: "Error fetching addresses", error });
@@ -106,3 +106,5 @@ router.get("/:userId", async (req, res) => {
 });
 
 module.exports = router;
+
+
