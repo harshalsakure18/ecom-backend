@@ -105,6 +105,32 @@ router.get("/:email", async (req, res) => {
     }
 });
 
+// ✅ PATCH: Update existing address for a user
+router.patch("/update", async (req, res) => {
+    try {
+        const { email, fullName, street, city, state, zipCode, country, phone } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        // Find existing address and update
+        const updatedAddress = await Address.findOneAndUpdate(
+            { email },
+            { fullName, street, city, state, zipCode, country, phone },
+            { new: true }
+        );
+
+        if (!updatedAddress) {
+            return res.status(404).json({ message: "Address not found" });
+        }
+
+        res.json({ message: "Address updated successfully", address: updatedAddress });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating address", error });
+    }
+});
+
 module.exports = router;
 
 
